@@ -3,7 +3,13 @@ guid: 60eff4b64db2f264f9c91b7dfdf8160d
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - maze: {instanceID: 0}
+  - closedMaterial: {instanceID: 0}
+  - openMaterial: {instanceID: 0}
+  - start: {fileID: 302218380737281610, guid: ef44b7d2e6e35443aab13daf5583bd3e, type: 3}
+  - end: {fileID: 6856673923357348324, guid: a05f88bb7457d4e59bd0ee0e79575ce1, type: 3}
+  - pathP: {fileID: 4872082831671335508, guid: fbc327f82b9b646dca7e0960e120ec66, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

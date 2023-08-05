@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using System.IO;
-using System.Numerics;
-using System.Runtime.InteropServices;
 
-public class PathMarker {
+
+public class PathMarker 
+
+{
 
     public MapLocation location;
     public float G, H, F;
@@ -50,6 +50,8 @@ public class FindPathAStar : MonoBehaviour {
     PathMarker goalNode;
     PathMarker lastPos;
     bool done = false;
+    bool hasStarted = false;
+
 
     List<PathMarker> open = new List<PathMarker>();
     List<PathMarker> closed = new List<PathMarker>();
@@ -105,23 +107,23 @@ public class FindPathAStar : MonoBehaviour {
 
            foreach (MapLocation dir in maze.directions)
            {
-               MapLocation neighbor = + thisNode.location;
-               if (Maze.map[neighbor.x, neighbor.z] == 1) continue;
+               MapLocation neighbor = dir + thisNode.location;
+               if (maze.map[neighbor.x, neighbor.z] == 1) continue;
                if (neighbor.x < 1 || neighbor.x >= maze.width || neighbor.z < 1 || neighbor.z >= maze.depth) continue;
                if(IsClosed(neighbor)) continue;
 
-               float G = Vector2.Distance(thisNode.Equalslocation.ToVector(), neighbor.ToVector()) + thisNode.G;
+               float G = Vector2.Distance(thisNode.location.ToVector(), neighbor.ToVector()) + thisNode.G;
                float H = Vector2.Distance(neighbor.ToVector(), goalNode.location.ToVector());
                float F = G + H;
 
-               GameObject pathBlock = Instanitate(pathP, new Vector3(neighbor.x * MapLocation.x * maze.scale, 0, neighbor.z * maze.scale), Quaternian.identity);
+               GameObject pathBlock = Instantiate(pathP, new Vector3(neighbor.x * maze.scale, 0.0f, neighbor.z * maze.scale), Quaternion.identity);
 
                TextMesh[] values = pathBlock.GetComponentsInChildren<TextMesh>();
                values[0].text = "G:" + G.ToString("0.00");
                values[1].text = "H:" + H.ToString("0.00");
                values[2].text = "F:" + F.ToString("0.00");
 
-               if(!UpdateMarker(neighbor, G,H,F, thisNode))
+               if(!UpdateMarker(neighbor, G, H, F, thisNode))
                    open.Add(new PathMarker(neighbor, G, H, F, pathBlock, thisNode));               
 
            }
@@ -148,7 +150,7 @@ public class FindPathAStar : MonoBehaviour {
 
             {
                 p.G = g;
-                g.H = h;
+                p.H = h;
                 p.F = f;
                 p.parent = prt;
                 return true;
@@ -172,15 +174,36 @@ return false;
 
     }
 
-    void Start() 
-    
-    {
+    void GetPath() {
 
+        RemoveAllMarkers();
+        PathMarker begin = lastPos;
+
+        while (!startNode.Equals(begin) && begin != null) {
+
+            Instantiate(pathP, new Vector3(begin.location.x * maze.scale, 0.0f, begin.location.z * maze.scale), Quaternion.identity);
+            begin = begin.parent;
+        }
+
+        Instantiate(pathP, new Vector3(startNode.location.x * maze.scale, 0.0f, startNode.location.z * maze.scale), Quaternion.identity);
     }
 
-    void Update() {
+void Update() {
 
-        if (Input.GetKeyDown(KeyCode.P)) BeginSearch();
-        if (Input.GetKeyDown(KeyCode.C)) Search(lastPos);
+        if (Input.GetKeyDown(KeyCode.P)) {
+
+            BeginSearch();
+            hasStarted = true;
+        }
+
+        if (hasStarted) {
+
+            if (Input.GetKeyDown(KeyCode.C) && !done) Search(lastPos);
+        }
+
+        if (Input.GetKeyDown(KeyCode.M)) {
+
+            GetPath();
+        }
     }
 }
